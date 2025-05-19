@@ -54,10 +54,25 @@ def getStudentResults():
 
 def getScheduleList(role):
    if role == "t":
-       print("In progress")
+       return TeacherSchedule();
    elif role == "s":
        return getStudentResults()
 
+def TeacherSchedule():
+    TeacherID = input("Enter A Teacher ID: ")
+    connection = mysql.connector.connect(user='dhundupr2',
+                                         password='233048966',
+                                         host='10.8.37.226',
+                                         database='dhundupr2_db')
+    cursor = connection.cursor()
+    query="select Period, Room, CourseName,TeacherID from (select * from OfferedCourse where TeacherID = "+TeacherID+") as c inner join Roster on c.OfferedCourseID = Roster.OfferedCourseID group by c.OfferedCourseID  order by Period;"
+    cursor.execute(query)
+    OfferedCourseList = []
+    for row in cursor:
+        OfferedCourseList.append(row)
+    cursor.close()
+    connection.close()
+    return OfferedCourseList
 
 def printTeacher(TeacherID):
    connection = mysql.connector.connect(user='dhundupr2',
@@ -78,8 +93,10 @@ def printTeacher(TeacherID):
 
 
 
+
 x = getInput()
 result = getScheduleList(x)
+print("");
 for row in result:
    print("Period:", row[0])
    print("Course:", row[2])
@@ -87,8 +104,4 @@ for row in result:
    teacherName = printTeacher(row[3])
    print("Teacher:", teacherName)
    print("")
-
-
-
-
 
