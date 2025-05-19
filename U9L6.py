@@ -1,10 +1,17 @@
-
-
 import mysql.connector
 
 
 
 
+def getInput():
+   while True:
+       x = input("Are You Entering As A Student Or Teacher: s/t :  ")
+       if x == "s":
+           return x
+       elif x == "t":
+           return x
+       else:
+           print("Incorrect Input Try Again ('s' or 't' )")
 
 
 
@@ -15,10 +22,10 @@ def getTeacherName(TeacherID):
                                         host='10.8.37.226',
                                         database='dhundupr2_db')
    cursor = connection.cursor()
-   query = "select TeacherName from Teacher where TeacherID = "+TeacherID+""
+   query = "select TeacherName from Teacher where TeacherID = " + TeacherID + ""
    cursor.execute(query)
    for row in cursor:
-       teacher=row;
+       teacher = row;
    cursor.close()
    connection.close()
    return teacher;
@@ -26,13 +33,14 @@ def getTeacherName(TeacherID):
 
 
 
-def getResults(StudentID):
+def getStudentResults():
+   StudentID = input("Enter A Student ID: ")
    connection = mysql.connector.connect(user='dhundupr2',
                                         password='233048966',
                                         host='10.8.37.226',
                                         database='dhundupr2_db')
    cursor = connection.cursor()
-   query = "select Period, Room,CourseName,TeacherID from (select OfferedCourseID from Roster where StudentID = "+StudentID+") as c inner join OfferedCourse on c.OfferedCourseID = OfferedCourse.OfferedCourseID group by c.OfferedCourseID order by Period"
+   query = "select Period, Room,CourseName,TeacherID from (select OfferedCourseID from Roster where StudentID = " + StudentID + ") as c inner join OfferedCourse on c.OfferedCourseID = OfferedCourse.OfferedCourseID group by c.OfferedCourseID order by Period"
    cursor.execute(query)
    OfferedCourseList = []
    for row in cursor:
@@ -44,34 +52,41 @@ def getResults(StudentID):
    return OfferedCourseList
 
 
+def getScheduleList(role):
+   if role == "t":
+       print("In progress")
+   elif role == "s":
+       return getStudentResults()
+
+
 def printTeacher(TeacherID):
-    connection = mysql.connector.connect(user='dhundupr2',
-                                         password='233048966',
-                                         host='10.8.37.226',
-                                         database='dhundupr2_db')
-    cursor = connection.cursor()
-    TeachersID = str(TeacherID)
-    query2 = "call TeacherByID( " +  TeachersID + ")"
-    cursor.execute(query2)
-    teacherName = ""
-    for rows in cursor:
-        teacherName = rows
-    cursor.close()
-    connection.close()
-    return teacherName[0]
+   connection = mysql.connector.connect(user='dhundupr2',
+                                        password='233048966',
+                                        host='10.8.37.226',
+                                        database='dhundupr2_db')
+   cursor = connection.cursor()
+   TeachersID = str(TeacherID)
+   query2 = "call TeacherByID( " + TeachersID + ")"
+   cursor.execute(query2)
+   teacherName = ""
+   for rows in cursor:
+       teacherName = rows
+   cursor.close()
+   connection.close()
+   return teacherName[0]
 
 
 
-studentID = input("Enter A Student ID: ")
-result = getResults(studentID)
-print(result)
+
+x = getInput()
+result = getScheduleList(x)
 for row in result:
-    print("Period:", row[0])
-    print("Course:", row[2])
-    print("Room:", row[1])
-    teacherName = printTeacher(row[3])
-    print("Teacher:", teacherName)
-    print("")
+   print("Period:", row[0])
+   print("Course:", row[2])
+   print("Room:", row[1])
+   teacherName = printTeacher(row[3])
+   print("Teacher:", teacherName)
+   print("")
 
 
 
