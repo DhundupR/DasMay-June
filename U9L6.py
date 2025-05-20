@@ -1,3 +1,4 @@
+
 import mysql.connector
 
 
@@ -12,6 +13,7 @@ def getInput():
            return x
        else:
            print("Incorrect Input Try Again ('s' or 't' )")
+
 
 
 
@@ -56,10 +58,12 @@ def getScheduleList(role):
    if role == "t":
        return TeacherSchedule();
    elif role == "s":
-       return getStudentResults()
+    studentMenu()
 
 def TeacherSchedule():
     TeacherID = input("Enter A Teacher ID: ")
+    teacher = getTeacherName(TeacherID)
+    print("Welcome", teacher[0])
     connection = mysql.connector.connect(user='dhundupr2',
                                          password='233048966',
                                          host='10.8.37.226',
@@ -74,6 +78,34 @@ def TeacherSchedule():
     connection.close()
     return OfferedCourseList
 
+def studentSchedulePrint(result):
+    print("");
+    for row in result:
+        print("Period:", row[0])
+        print("Course:", row[2])
+        print("Room:", row[1])
+        teacherName = printTeacher(row[3])
+        print("Teacher:", teacherName)
+        print("")
+def studentMenu():
+    while True:
+        print("Enter a to Print Student Schedule: ")
+        print("Enter g to print grades for a specific class: ")
+        print("Enter q to quit: ")
+        choice = input("Select: ")
+        StudentChoice(choice)
+        if choice == "q":
+            print("Good Bye")
+            break
+
+def StudentChoice(input):
+    while True:
+        if input == "a":
+            studentSchedulePrint(getStudentResults())
+            break
+        if input == "q":
+            break
+        print("Try Again")
 def printTeacher(TeacherID):
    connection = mysql.connector.connect(user='dhundupr2',
                                         password='233048966',
@@ -96,12 +128,5 @@ def printTeacher(TeacherID):
 
 x = getInput()
 result = getScheduleList(x)
-print("");
-for row in result:
-   print("Period:", row[0])
-   print("Course:", row[2])
-   print("Room:", row[1])
-   teacherName = printTeacher(row[3])
-   print("Teacher:", teacherName)
-   print("")
+
 
