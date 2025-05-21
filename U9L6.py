@@ -87,6 +87,45 @@ def studentSchedulePrint(result):
         teacherName = printTeacher(row[3])
         print("Teacher:", teacherName)
         print("")
+
+def getOfferedCourseID(StudentID, Period):
+    connection = mysql.connector.connect(user='dhundupr2',
+                                         password='233048966',
+                                         host='10.8.37.226',
+                                         database='dhundupr2_db')
+    cursor = connection.cursor()
+
+    query="select OfferedCourse.OfferedCourseID from ( select * from Roster where StudentID ="+StudentID+") as c inner join OfferedCourse on c.OfferedCourseID = OfferedCourse.OfferedCourseID where Period = "+Period+""
+    cursor.execute(query)
+    for row in cursor:
+        return row[0]
+    cursor.close()
+    connection.close()
+def getStudentGrades():
+    connection = mysql.connector.connect(user='dhundupr2',
+                                         password='233048966',
+                                         host='10.8.37.226',
+                                         database='dhundupr2_db')
+    cursor = connection.cursor()
+
+    StudentID = input("Enter A Student ID: ")
+    query = "select CourseName,Period from ( select * from Roster where StudentID = " + StudentID+ ") as c inner join OfferedCourse on c.OfferedCourseID = OfferedCourse.OfferedCourseID"
+    cursor.execute(query)
+    Classes = []
+
+    for row in cursor:
+        Classes.append(row)
+    numVar=len(Classes)
+    i=0;
+    for i in range (0,numVar):
+        print("Course Name:", Classes[i][0], ", Period", Classes[i][1])
+
+    CourseName = input("Enter Course Name: ")
+    Period = input("Enter Period Number: ")
+
+
+    cursor.close()
+    connection.close()
 def studentMenu():
     while True:
         print("Enter a to Print Student Schedule: ")
@@ -102,6 +141,9 @@ def StudentChoice(input):
     while True:
         if input == "a":
             studentSchedulePrint(getStudentResults())
+            break
+        if input == "g":
+            getStudentGrades()
             break
         if input == "q":
             break
@@ -128,5 +170,4 @@ def printTeacher(TeacherID):
 
 x = getInput()
 result = getScheduleList(x)
-
 
