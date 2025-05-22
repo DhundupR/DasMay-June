@@ -101,6 +101,25 @@ def getOfferedCourseID(StudentID, Period):
         return row[0]
     cursor.close()
     connection.close()
+
+
+def GetGradeList(OfferedCourseId,StudentID):
+    connection = mysql.connector.connect(user='dhundupr2',
+                                             password='233048966',
+                                             host='10.8.37.226',
+                                             database='dhundupr2_db')
+    cursor = connection.cursor()
+    query="select Grade from ((select * from Gradebook where StudentID = "+StudentID+ ") as c inner join Assignment on c.AssignmentID = Assignment.AssignmentID) where OfferedCourseID = "+ str(OfferedCourseId)+""
+    cursor.execute(query)
+    gradeList =[]
+    for row in cursor:
+        gradeList.append(row)
+    cursor.close()
+    connection.close()
+    return gradeList
+
+def getGradeAverage():
+
 def getStudentGrades():
     connection = mysql.connector.connect(user='dhundupr2',
                                          password='233048966',
@@ -120,8 +139,13 @@ def getStudentGrades():
     for i in range (0,numVar):
         print("Course Name:", Classes[i][0], ", Period", Classes[i][1])
 
-    CourseName = input("Enter Course Name: ")
     Period = input("Enter Period Number: ")
+    OfferedCourseID = getOfferedCourseID(StudentID,Period)
+
+    gradeList= GetGradeList(OfferedCourseID,StudentID)
+    print(gradeList)
+
+
 
 
     cursor.close()
@@ -170,4 +194,3 @@ def printTeacher(TeacherID):
 
 x = getInput()
 result = getScheduleList(x)
-
